@@ -5,9 +5,10 @@ import { LogLevel } from './enums/LogLevel'
 import { LogName } from './enums/LogName'
 import { ErrorLog, ErrorParams, User } from './interfaces/Logger'
 import { moreThanOneDay } from './modules/time'
-import { get, set } from './modules/uuidStorage'
+import { getUuid, setUuid } from './modules/uuidStorage'
 
-const fluentBitPath = `${process.env.NUXT_BASE_URL}/log`
+// const fluentBitPath = `${process.env.LOG_BASE_URL}/log`
+const fluentBitPath = 'https://dev.gogoout.com/log'
 
 class GogooutLogger {
   /** browserInfo */
@@ -20,11 +21,11 @@ class GogooutLogger {
 
   async setup () {
     await this.getBrowserInfo()
-    this.setUuid()
+    this._setUuid()
   }
 
-  private setUuid () {
-    const uuid = get()
+  private _setUuid () {
+    const uuid = getUuid()
     const obj = {
       uuid: uuidv4(),
       ttl: new Date().getTime()
@@ -32,15 +33,15 @@ class GogooutLogger {
 
     if (uuid && uuid?.ttl) {
       if (moreThanOneDay(uuid.ttl)) {
-        set(obj)
+        setUuid(obj)
       }
     } else {
-      set(obj)
+      setUuid(obj)
     }
   }
 
-  private getUuid () {
-    const uuidTtl = get()
+  private _getUuid () {
+    const uuidTtl = getUuid()
     return uuidTtl?.uuid
   }
 
@@ -84,6 +85,7 @@ class GogooutLogger {
     }
   }
 
+  /** 測試用 */
   getThis () {
     return this
   }
@@ -96,14 +98,14 @@ class GogooutLogger {
       log_level: LogLevel.ERROR,
       timestamp: Date.now(),
       ip: this.ip,
-      host: process.env.NUXT_BASE_URL || '',
+      host: process.env.LOG_BASE_URL || '',
       service: this.service,
       client_type: this.clientType,
 
       /** User */
       user: {
         ...this.user,
-        device_id: this.getUuid()
+        device_id: this._getUuid()
       },
 
       /** DynamicErrorLog */
