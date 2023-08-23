@@ -1,8 +1,5 @@
 /* eslint-disable camelcase */
-import { LogName } from '../enums/LogName'
-import { LogLevel } from '../enums/LogLevel'
-import { Severity } from '../enums/Severity'
-import { ErrorType } from '../enums/ErrorType'
+import { Severity, LogName, LogLevel, ErrorType, ToastType } from '../enums'
 
 export interface HttpRequest {
   /** 請求完整 url e.g. 'https://gogoout.com/search' */
@@ -62,6 +59,17 @@ export interface ErrorParams {
   data?: Record<string, any>;
 }
 
+export interface ToastParams {
+  /** 錯誤訊息 */
+  message: string;
+  /** 錯誤發生位置 */
+  location: string;
+  /** 類型
+   * success/warning/danger
+  */
+  type: ToastType;
+}
+
 export interface SearchParams {
   /** 時間相關 */
   /** 2023-01-01 */
@@ -93,16 +101,14 @@ export interface SearchParams {
   count: number;
 }
 
-export interface SearchLog extends Common, SearchParams {
-  user: User;
-}
-
-export interface ToastLog extends Common {
-  type: 'success' | 'warning' | 'danger';
-  message: string;
-  user: User;
-}
-
 export interface ErrorLog extends Common, ErrorParams{
   user: User
+}
+
+export interface ToastLog extends Common, ToastParams {
+  user: User;
+}
+
+export interface SearchLog extends Common, SearchParams {
+  user: User;
 }

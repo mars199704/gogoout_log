@@ -1,9 +1,8 @@
 import 'dotenv/config'
 import { isString } from 'typechecker'
 import { v4 as uuidv4 } from 'uuid'
-import { LogLevel } from './enums/LogLevel'
-import { LogName } from './enums/LogName'
-import { ErrorLog, ErrorParams, User } from './interfaces/Logger'
+import { Severity, LogName, LogLevel, ErrorType } from './enums'
+import { HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, SearchLog, ToastLog, ErrorLog } from './interfaces'
 import { moreThanOneDay } from './modules/time'
 import { getUuid, setUuid } from './modules/uuidStorage'
 
@@ -83,11 +82,6 @@ class GogooutLogger {
     }
   }
 
-  /** 測試用 */
-  getThis () {
-    return this
-  }
-
   /** 錯誤日誌 */
   error (data: ErrorParams) {
     const logData: ErrorLog = {
@@ -112,8 +106,56 @@ class GogooutLogger {
 
     this.send(logData)
   }
+
+  toast (data: ToastParams) {
+    const logData: ToastLog = {
+      /** Common */
+      log_name: LogName.TOAST,
+      log_level: LogLevel.ERROR,
+      timestamp: Date.now(),
+      ip: this.#ip,
+      host: process.env.LOG_BASE_URL || '',
+      service: this.#service,
+      client_type: this.#clientType,
+
+      /** User */
+      user: {
+        ...this.#user,
+        device_id: this._getUuid()
+      },
+
+      /** DynamicErrorLog */
+      ...data
+    }
+
+    this.send(logData)
+  }
+
+  search (data: SearchParams) {
+    const logData: SearchLog = {
+      /** Common */
+      log_name: LogName.SEARCH,
+      log_level: LogLevel.ERROR,
+      timestamp: Date.now(),
+      ip: this.#ip,
+      host: process.env.LOG_BASE_URL || '',
+      service: this.#service,
+      client_type: this.#clientType,
+
+      /** User */
+      user: {
+        ...this.#user,
+        device_id: this._getUuid()
+      },
+
+      /** DynamicErrorLog */
+      ...data
+    }
+
+    this.send(logData)
+  }
 }
 
 const ggoLogger = new GogooutLogger()
 
-export { ggoLogger }
+export { ggoLogger, Severity, LogName, LogLevel, ErrorType, HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, SearchLog, ToastLog, ErrorLog }
