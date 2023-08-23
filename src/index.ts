@@ -12,12 +12,10 @@ const fluentBitPath = 'https://dev.gogoout.com/log'
 
 class GogooutLogger {
   /** browserInfo */
-  ip: string = ''
-  service: string = 'Nuxt'
-  clientType: string = 'web'
-  /** uuid 追蹤使用者的裝置 id，當登入後要將 uuid bind 進 user 中的 device_id */
-  uuid: string = ''
-  user!: User
+  #ip: string = ''
+  #service: string = 'Nuxt'
+  #clientType: string = 'web'
+  #user!: User
 
   async setup () {
     await this.getBrowserInfo()
@@ -64,7 +62,7 @@ class GogooutLogger {
   private async getBrowserInfo () {
     const { ip = '' } = { ...await this.getTrace() }
 
-    if (ip && isString(ip)) this.ip = ip
+    if (ip && isString(ip)) this.#ip = ip
   }
 
   private async send (data: object) {
@@ -78,7 +76,7 @@ class GogooutLogger {
   }
 
   setUser (id: number, language: string) {
-    this.user = {
+    this.#user = {
       user_id: String(id),
       language,
       device_id: ''
@@ -97,14 +95,14 @@ class GogooutLogger {
       log_name: LogName.ERROR,
       log_level: LogLevel.ERROR,
       timestamp: Date.now(),
-      ip: this.ip,
+      ip: this.#ip,
       host: process.env.LOG_BASE_URL || '',
-      service: this.service,
-      client_type: this.clientType,
+      service: this.#service,
+      client_type: this.#clientType,
 
       /** User */
       user: {
-        ...this.user,
+        ...this.#user,
         device_id: this._getUuid()
       },
 
