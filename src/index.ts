@@ -14,7 +14,11 @@ class GogooutLogger {
   #clientType: string = ''
   #host: string = ''
 
-  async setup (browserInfo) {
+  async setup (browserInfo:{
+    service: string,
+    clientType: string,
+    host: string
+  }) {
     await this.getBrowserInfo()
     this._setUuid()
     this.setBrowserInfo(browserInfo)
@@ -65,7 +69,7 @@ class GogooutLogger {
   }
 
   private async send (data: object) {
-    await fetch(`${this.host}/log`, {
+    await fetch(`${this.#host}/log`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {

@@ -9,6 +9,7 @@ export default [
       format: 'cjs',
       sourcemap: true
     },
-    plugins: [terser()]
+    plugins: [terser()],
+    external: ['uuid']
   }
 ]
