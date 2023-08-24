@@ -169,4 +169,6 @@ class GogooutLogger {
   }
 }
 
-export { GogooutLogger, Severity, LogLevel, ErrorType, HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, SearchLog, ToastLog, ErrorLog }
+const ggoLogger = new GogooutLogger()
+
+export { ggoLogger, Severity, LogLevel, ErrorType, HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, SearchLog, ToastLog, ErrorLog }
