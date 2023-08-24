@@ -10,24 +10,14 @@ class GogooutLogger {
   #ip: string = ''
   #uag: string = ''
   #user!: User
+  #service: string = ''
+  #clientType: string = ''
+  #host: string = ''
 
-  service: string = ''
-  clientType: string = ''
-  host: string = ''
-
-  constructor (browserInfo:{
-      service: string,
-      clientType: string,
-      host: string
-    }) {
-    if (browserInfo.service && isString(browserInfo.service)) this.service = browserInfo.service
-    if (browserInfo.clientType && isString(browserInfo.clientType)) this.clientType = browserInfo.clientType
-    if (browserInfo.host && isString(browserInfo.host)) this.host = browserInfo.host
-  }
-
-  async setup () {
+  async setup (browserInfo) {
     await this.getBrowserInfo()
     this._setUuid()
+    this.setBrowserInfo(browserInfo)
   }
 
   private _setUuid () {
@@ -92,6 +82,12 @@ class GogooutLogger {
     }
   }
 
+  setBrowserInfo (browserInfo: {service: string, clientType: string, host: string}) {
+    if (browserInfo.service && isString(browserInfo.service)) this.#service = browserInfo.service
+    if (browserInfo.clientType && isString(browserInfo.clientType)) this.#clientType = browserInfo.clientType
+    if (browserInfo.host && isString(browserInfo.host)) this.#host = browserInfo.host
+  }
+
   /** 錯誤日誌 */
   error (logLevel: LogLevel, data: ErrorParams) {
     const logData: ErrorLog = {
@@ -101,9 +97,9 @@ class GogooutLogger {
       timestamp: Date.now(),
       ip: this.#ip,
       uag: this.#uag,
-      host: this.host,
-      service: this.service,
-      client_type: this.clientType,
+      host: this.#host,
+      service: this.#service,
+      client_type: this.#clientType,
 
       /** User */
       user: {
@@ -126,9 +122,9 @@ class GogooutLogger {
       timestamp: Date.now(),
       ip: this.#ip,
       uag: this.#uag,
-      host: this.host,
-      service: this.service,
-      client_type: this.clientType,
+      host: this.#host,
+      service: this.#service,
+      client_type: this.#clientType,
 
       /** User */
       user: {
@@ -151,9 +147,9 @@ class GogooutLogger {
       timestamp: Date.now(),
       ip: this.#ip,
       uag: this.#uag,
-      host: this.host,
-      service: this.service,
-      client_type: this.clientType,
+      host: this.#host,
+      service: this.#service,
+      client_type: this.#clientType,
 
       /** User */
       user: {
