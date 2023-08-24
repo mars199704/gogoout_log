@@ -5,9 +5,6 @@ import { HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, Sear
 import { moreThanOneDay } from './modules/time'
 import { getUuid, setUuid } from './modules/uuidStorage'
 
-// const fluentBitPath = `${process.env.LOG_BASE_URL}/log`
-const fluentBitPath = 'https://dev.gogoout.com/log'
-
 class GogooutLogger {
   /** browserInfo */
   #ip: string = ''
@@ -78,7 +75,7 @@ class GogooutLogger {
   }
 
   private async send (data: object) {
-    await fetch(fluentBitPath, {
+    await fetch(`${this.host}/log`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
