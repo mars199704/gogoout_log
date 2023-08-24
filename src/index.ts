@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { isString } from 'typechecker'
 import { v4 as uuidv4 } from 'uuid'
 import { Severity, LogName, LogLevel, ErrorType } from './enums'
@@ -12,9 +11,22 @@ const fluentBitPath = 'https://dev.gogoout.com/log'
 class GogooutLogger {
   /** browserInfo */
   #ip: string = ''
-  #service: string = 'Nuxt'
-  #clientType: string = 'web'
+  #uag: string = ''
   #user!: User
+
+  service: string = ''
+  clientType: string = ''
+  host: string = ''
+
+  constructor (
+    service: string,
+    clientType: string,
+    host: string
+  ) {
+    if (service && isString(service)) this.service = service
+    if (clientType && isString(clientType)) this.clientType = clientType
+    if (host && isString(host)) this.host = host
+  }
 
   async setup () {
     await this.getBrowserInfo()
@@ -42,7 +54,7 @@ class GogooutLogger {
     return uuidTtl?.uuid
   }
 
-  private async getTrace (): Promise<Record<string, string> | null> {
+  private async _getTrace (): Promise<Record<string, string> | null> {
     try {
       const res = await fetch('https://www.cloudflare.com/cdn-cgi/trace')
       const list = (await res.text()).split('\n')
@@ -59,9 +71,10 @@ class GogooutLogger {
   }
 
   private async getBrowserInfo () {
-    const { ip = '' } = { ...await this.getTrace() }
+    const { ip = '', uag = null } = { ...await this._getTrace() }
 
     if (ip && isString(ip)) this.#ip = ip
+    if (uag && isString(uag)) this.#uag = uag
   }
 
   private async send (data: object) {
@@ -83,16 +96,17 @@ class GogooutLogger {
   }
 
   /** 錯誤日誌 */
-  error (data: ErrorParams) {
+  error (logLevel: LogLevel, data: ErrorParams) {
     const logData: ErrorLog = {
       /** Common */
       log_name: LogName.ERROR,
-      log_level: LogLevel.ERROR,
+      log_level: logLevel,
       timestamp: Date.now(),
       ip: this.#ip,
-      host: process.env.LOG_BASE_URL || '',
-      service: this.#service,
-      client_type: this.#clientType,
+      uag: this.#uag,
+      host: this.host,
+      service: this.service,
+      client_type: this.clientType,
 
       /** User */
       user: {
@@ -107,16 +121,17 @@ class GogooutLogger {
     this.send(logData)
   }
 
-  toast (data: ToastParams) {
+  toast (logLevel: LogLevel, data: ToastParams) {
     const logData: ToastLog = {
       /** Common */
       log_name: LogName.TOAST,
-      log_level: LogLevel.ERROR,
+      log_level: logLevel,
       timestamp: Date.now(),
       ip: this.#ip,
-      host: process.env.LOG_BASE_URL || '',
-      service: this.#service,
-      client_type: this.#clientType,
+      uag: this.#uag,
+      host: this.host,
+      service: this.service,
+      client_type: this.clientType,
 
       /** User */
       user: {
@@ -131,16 +146,17 @@ class GogooutLogger {
     this.send(logData)
   }
 
-  search (data: SearchParams) {
+  search (logLevel: LogLevel, data: SearchParams) {
     const logData: SearchLog = {
       /** Common */
       log_name: LogName.SEARCH,
-      log_level: LogLevel.ERROR,
+      log_level: logLevel,
       timestamp: Date.now(),
       ip: this.#ip,
-      host: process.env.LOG_BASE_URL || '',
-      service: this.#service,
-      client_type: this.#clientType,
+      uag: this.#uag,
+      host: this.host,
+      service: this.service,
+      client_type: this.clientType,
 
       /** User */
       user: {
@@ -156,6 +172,4 @@ class GogooutLogger {
   }
 }
 
-const ggoLogger = new GogooutLogger()
-
-export { ggoLogger, Severity, LogName, LogLevel, ErrorType, HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, SearchLog, ToastLog, ErrorLog }
+export { GogooutLogger, Severity, LogLevel, ErrorType, HttpRequest, Common, User, ErrorParams, ToastParams, SearchParams, SearchLog, ToastLog, ErrorLog }

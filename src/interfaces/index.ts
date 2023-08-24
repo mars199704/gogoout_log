@@ -23,6 +23,8 @@ export interface Common {
   timestamp: number;
   /** 發起請求的ip */
   ip: string;
+  /** user agent */
+  uag: string,
   /** 請求的 host e.g. 'https://gogoout.com' */
   host: string;
   /** 瀏覽器資訊 */
