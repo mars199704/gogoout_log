@@ -18,14 +18,14 @@ class GogooutLogger {
   clientType: string = ''
   host: string = ''
 
-  constructor (
-    service: string,
-    clientType: string,
-    host: string
-  ) {
-    if (service && isString(service)) this.service = service
-    if (clientType && isString(clientType)) this.clientType = clientType
-    if (host && isString(host)) this.host = host
+  constructor (browserInfo:{
+      service: string,
+      clientType: string,
+      host: string
+    }) {
+    if (browserInfo.service && isString(browserInfo.service)) this.service = browserInfo.service
+    if (browserInfo.clientType && isString(browserInfo.clientType)) this.clientType = browserInfo.clientType
+    if (browserInfo.host && isString(browserInfo.host)) this.host = browserInfo.host
   }
 
   async setup () {
